@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление личными финансами</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="chart-section">
+            <h2>Круговая диаграмма доходов и расходов</h2>
+            <canvas id="myPieChart" width="200" height="200"></canvas> <!-- Круговая диаграмма -->
+            <div class="month-selector">
+                <label for="month">Выберите месяц:</label>
+                <select id="month" onchange="updateChart()">
+                    <option value="январь">Январь</option>
+                    <option value="февраль">Февраль</option>
+                    <option value="март">Март</option>
+                    <option value="апрель">Апрель</option>
+                    <option value="май">Май</option>
+                    <option value="июнь">Июнь</option>
+                    <option value="июль">Июль</option>
+                    <option value="август">Август</option>
+                    <option value="сентябрь">Сентябрь</option>
+                    <option value="октябрь">Октябрь</option>
+                    <option value="ноябрь">Ноябрь</option>
+                    <option value="декабрь">Декабрь</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-section">
+            <h1>Управление личными финансами</h1>
+            <button class="back-button" onclick="window.location.href='index.html'">На главную</button>
+            <div class="balance">Баланс: <span id="balance">0</span> ₽</div>
+            <input type="text" id="description" placeholder="Описание" />
+            <input type="number" id="amount" placeholder="Сумма" />
+            <select id="category">
+                <option value="">Выберите категорию</option>
+                <option value="еда">Еда</option>
+                <option value="транспорт">Транспорт</option>
+                <option value="развлечения">Развлечения</option>
+                <option value="другое">Другое</option>
+            </select>
+            <button onclick="addTransaction('income')">Добавить доход</button>
+            <button onclick="addTransaction('expense')">Добавить расход</button>
+            <div class="recommendations" id="recommendations"></div>
+        </div>
+
+        <div class="transaction-section">
+            <h2>Транзакции</h2>
+            <div class="transaction-list" id="transactionList"></div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 0;
+        const transactionList = document.getElementById('transactionList');
+        const balanceDisplay = document.getElementById('balance');
+        const recommendationsDisplay = document.getElementById('recommendations');
+        const incomeData = {};
+        const expenseData = {};
+        const ctx = document.getElementById('myPieChart').getContext('2d');
+        let myPieChart;
+
+        function addTransaction(type) {
+            const description = document.getElementById('description').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const month = document.getElementById('month').value;
+
+            if (!description || isNaN(amount) || !category) {
+                alert('Пожалуйста, введите корректные данные.');
+                return;
+            }
+
+            if (type === 'income') {
+                balance += amount;
+                incomeData[month] = (incomeData[month] || 0) + amount;
+                transactionList.innerHTML += `<div class="transaction income">${description} (${category}, ${month}): +${amount} ₽</div>`;
+            } else {
+                balance -= amount;
+                expenseData[month] = (expenseData[month] || 0) + amount;
+                transactionList.innerHTML += `<div class="transaction expense">${description} (${category}, ${month}): -${amount} ₽</div>`;
+            }
+
+            balanceDisplay.textContent = balance.toFixed(2);
+            document.getElementById('description').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('category').value = '';
+            provideRecommendations();
+            updateChart();
+        }
+
+        function provideRecommendations() {
+            recommendationsDisplay.innerHTML = `<h3>Рекомендации:</h3>`;
+            // Здесь можно добавить логику для рекомендаций
+        }
+
+        function updateChart() {
+            const month = document.getElementById('month').value;
+            const income = incomeData[month] || 0;
+            const expense = expenseData[month] || 0;
+
+            if (myPieChart) {
+                myPieChart.destroy(); // Уничтожаем предыдущую диаграмму
+            }
+
+            myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Доходы', 'Расходы'],
+                    datasets: [{
+                        label: 'Финансовые данные',
+                        data: [income, expense],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: `Доходы и расходы за ${month}`
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

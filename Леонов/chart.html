@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Круговая диаграмма расходов и доходов</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1>Круговая диаграмма расходов и доходов</h1>
+    </header>
+
+    <main class="chart-container">
+        <div class="chart">
+            <canvas id="myPieChart" width="200" height="200"></canvas> <!-- Круговая диаграмма -->
+            <div class="controls">
+                <button id="homePage">На главную страницу</button> <!-- Кнопка для возврата на главную -->
+            </div>
+        </div>
+        <div class="data-table">
+            <h2>История зачислений по месяцам</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Месяц</th>
+                        <th>Доходы</th>
+                        <th>Расходы</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Январь</td>
+                        <td>50000</td>
+                        <td>30000</td>
+                    </tr>
+                    <tr>
+                        <td>Февраль</td>
+                        <td>45000</td>
+                        <td>25000</td>
+                    </tr>
+                    <tr>
+                        <td>Март</td>
+                        <td>60000</td>
+                        <td>35000</td>
+                    </tr>
+                    <tr>
+                        <td>Апрель</td>
+                        <td>70000</td>
+                        <td>40000</td>
+                    </tr>
+                    <tr>
+                        <td>Май</td>
+                        <td>80000</td>
+                        <td>50000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Управление личными финансами. Все права защищены.</p>
+    </footer>
+
+    <script>
+        // Получаем данные из таблицы
+        const incomeData = [50000, 45000, 60000, 70000, 80000];
+        const expenseData = [30000, 25000, 35000, 40000, 50000];
+
+        // Суммируем доходы и расходы
+        const totalIncome = incomeData.reduce((a, b) => a + b, 0);
+        const totalExpenses = expenseData.reduce((a, b) => a + b, 0);
+
+        // Данные для круговой диаграммы
+        const data = {
+            labels: ['Доходы', 'Расходы'],
+            datasets: [{
+                label: 'Финансовые данные',
+                data: [totalIncome, totalExpenses],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 99, 132, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const ctx = document.getElementById('myPieChart').getContext('2d');
+        const myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Общие доходы и расходы'
+                    }
+                }
+            }
+        });
+
+        document.getElementById('homePage').addEventListener('click', () => {
+            window.location.href = 'index.html'; // Укажите путь к вашей главной странице
+        });
+    </script>
+</body>
+</html>
